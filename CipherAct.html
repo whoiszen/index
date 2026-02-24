@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Dynamic Cipher - AJ JOSOL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: white;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+.container {
+            background: #1e1e1e;
+            width: 450px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #000;
+        }
+
+input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #00c853;
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+button:hover {
+            background: #00e676;
+        }
+
+.result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+.key {
+            margin-top: 10px;
+            color: #00e676;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Daily Dynamic Cipher</h2>
+    <p>Note:If you want to decrypt, just copy the encrypted text here</p>
+    <input type="text" id="textInput" placeholder="Enter text (A-Z, 0-9)">
+
+    <div>
+        <button onclick="encrypt()">Encrypt</button>
+        <button onclick="decrypt()">Decrypt</button>
+    </div>
+
+    <div class="key" id="dailyKeyDisplay"></div>
+    <div class="result" id="result"></div>
+</div>
+<script>
+const base36 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+function generateDailyKey() {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1;
+    const year = today.getFullYear();
+
+    return (day + month + year) % 36;
+}
+
+function encrypt() {
+    let text = document.getElementById("textInput").value
+        .replace(/\s/g, "")
+        .toUpperCase();
+
+    const dailyKey = generateDailyKey();
+    const wordLength = text.length;
+
+    let result = "";
+
+    for (let i = 0; i < text.length; i++) {
+        const position = i + 1;
+        const originalValue = base36.indexOf(text[i]);
+
+        if (originalValue === -1) {
+            alert("Only A-Z and 0-9 allowed.");
+            return;
+        }
+
+        const encryptedValue =
+            (originalValue
+            + dailyKey
+            + (position * position)
+            + wordLength) % 36;
+
+        result += base36[encryptedValue];
+    }
+
+    console.log("Daily Key:", dailyKey);
+
+    document.getElementById("dailyKeyDisplay").innerHTML =
+        "Daily Key: " + dailyKey;
+
+    document.getElementById("result").innerHTML =
+        "Encrypted: " + result;
+}
+
+function decrypt() {
+    let text = document.getElementById("textInput").value
+        .replace(/\s/g, "")
+        .toUpperCase();
+
+    const dailyKey = generateDailyKey();
+    const wordLength = text.length;
+
+    let result = "";
+
+    for (let i = 0; i < text.length; i++) {
+        const position = i + 1;
+        const encryptedValue = base36.indexOf(text[i]);
+
+        if (encryptedValue === -1) {
+            alert("Only A-Z and 0-9 allowed.");
+            return;
+        }
+
+        const originalValue =
+            ((encryptedValue
+            - dailyKey
+            - (position * position)
+            - wordLength) % 36 + 36) % 36;
+
+        result += base36[originalValue];
+    }
+
+    console.log("Daily Key:", dailyKey);
+
+    document.getElementById("dailyKeyDisplay").innerHTML =
+        "Daily Key: " + dailyKey;
+
+    document.getElementById("result").innerHTML =
+        "Decrypted: " + result;
+}
+</script>
+</body>
+</html>
